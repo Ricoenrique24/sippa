@@ -252,6 +252,7 @@ class Pagu_jurusan extends CI_Controller
             // Kebutuhan untuk memasukkan data pada capaian akreditasi
             $prodi     = $this->M_data->getQuery("SELECT `nama_prodi` FROM `tb_prodi` WHERE `id_unit` = '$jurusan';")->result();
             $nam_jur   = $this->M_data->getQuery("SELECT `nama_unit` FROM `tb_unit` WHERE `id_unit` = '$jurusan';")->result()[0]->nama_unit;
+            $id_his    = $this->M_data->getQuery("SELECT `id_history` FROM `tb_history_prodi` WHERE `id_simulasi` = $_SESSION[id_simulasi] AND `jurusan` = '$nam_jur';")->result();
 
             // Menghilangkan dan Merekonstruksi nilai array yang hilang
             $str       = explode(";", $inputan);
@@ -263,11 +264,16 @@ class Pagu_jurusan extends CI_Controller
                 // Mengambil Nama Prodi
                 $nama_prodi      = $prodi[$i]->nama_prodi;
 
-                // Memasukkan pada database
-                $this->M_data->getQuery("INSERT INTO `tb_history_prodi` (`id_history`, `id_simulasi`, `jurusan`, `prodi`, `akreditasi`) VALUES (NULL, '$_SESSION[id_simulasi]', '$nam_jur', '$nama_prodi', '$str[$i]');");
-                // echo '<pre>';
-                // var_dump("INSERT INTO `tb_history_prodi` (`id_history`, `id_simulasi`, `jurusan`, `prodi`, `akreditasi`) VALUES (NULL, '$_SESSION[id_simulasi]', '$nam_jur', '$nama_prodi', '$str[$i]");
-                // echo '</pre>';
+                // jika ada data pada tabel history prodi, Maka update data: 
+                if (count($str) <= count($id_his)) {
+                    // Cek data berhasil diupdate
+                    var_dump("update", $i);
+                    $history         = $id_his[$i]->id_history;
+                    $this->M_data->getQuery("UPDATE `tb_history_prodi` SET `jurusan` = '$nam_jur', `prodi` = '$nama_prodi', `akreditasi` = '$str[$i]' WHERE `tb_history_prodi`.`id_history` = $history;");
+                } else {
+                    // Jika tidak, maka tambahkan data baru
+                    $this->M_data->getQuery("INSERT INTO `tb_history_prodi` (`id_history`, `id_simulasi`, `jurusan`, `prodi`, `akreditasi`) VALUES (NULL, '$_SESSION[id_simulasi]', '$nam_jur', '$nama_prodi', '$str[$i]');");
+                }
 
                 // Menghitung bobot nilai Capaian Akreditasi Prodi
                 if ($str[$i] == 'A' || $str[$i] == 'UNGGUL') {

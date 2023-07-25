@@ -23,7 +23,7 @@
                             <h3 class="box-title">Pagu Anggaran Jurusan</h3>
                         </div>
                         <!-- /.box-header -->
-                        <form id="dynamicContent" action="<?= site_url('Pagu_jurusan/add_inputan') ?>" method="post">
+                        <form id="dynamicContent" method="post">
                             <div class="box-body">
                                 <?php if (!isset($_SESSION['tahun_simulasi'])) { ?>
                                     <div class="row">
@@ -194,43 +194,40 @@
         inputan.type = "hidden";
         btnCari.style.display = "none";
 
-        // btnSubmit.addEventListener("click", function(event) {
-        //     event.preventDefault();
+        // Event listener pada elemen form (dynamicContent) untuk event "submit".
+        dynamicContent.addEventListener("submit", function(event) {
+            event.preventDefault(); // Mencegah pengiriman form secara default.
 
-        //     if (<?= $id_simulasi ?> == 0) {
-        //         dynamicContent.submit();
-        //     } else {
-        //         fetch("<?= site_url('cek-data/') ?>" + <?= $id_simulasi ?> + "/" + selectJurusan.value + "/" + subKategori.value)
-        //             .then(response => response.json())
-        //             .then(data => {
-        //                 var jumlah = data[0].jumlah;
+            // Lakukan validasi form atau tindakan lain yang diperlukan.
+            if (<?= $id_simulasi ?> == 0) {
+                setFormActionAndSubmit(); // Fungsi untuk mengubah action dan mengirimkan form.
+            } else {
+                fetch("<?= site_url('cek-data/') ?>" + <?= $id_simulasi ?> + "/" + selectJurusan.value + "/" + subKategori.value)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Proses validasi
+                        // Panggil fungsi untuk mengubah action dan mengirimkan form berdasarkan hasil validasi.
+                        var jumlah = data[0].jumlah;
 
-        //                 // Mengecek Apakah ada data pada tabel perhitungan? 
-        //                 if (jumlah > 0) {
-        //                     var decision = confirm("Anda Telah mengisi data ini. Ingin menimpa dengan data yang baru?");
+                        if (jumlah > 0) {
+                            var decision = confirm("Anda Telah mengisi data ini. Ingin menimpa dengan data yang baru?");
 
-        //                     if (decision == true) {
-        //                         // User menyetujui untuk menimpa data
-        //                         dynamicContent.submit();
-        //                         // console.log("true decision");
-        //                     } else {
-        //                         // User tidak menyetujui, Lewati tahapan submit form
-        //                         // Bagian ini dibiarkan kosong agar pengiriman data digagalkan.
-        //                         // console.log("cancel decision");
-        //                         // alert("segaon");
-        //                     }
-        //                 } else {
-        //                     // Melanjutkan submit form jika data merupakan data baru. 
-        //                     dynamicContent.submit();
-        //                     // console.log("out decision");
-        //                 }
-        //             })
-        //             .catch(error => {
-        //                 console.error("Terjadi kesalahan:", error);
-        //             });
-        //     }
-
-        // });
+                            if (decision) {
+                                // User menyetujui untuk menimpa data
+                                setFormActionAndSubmit(); // Fungsi untuk mengubah action dan mengirimkan form.
+                            } else {
+                                // User tidak menyetujui, Lewati tahapan pengiriman form.
+                            }
+                        } else {
+                            // Melanjutkan pengiriman form jika data merupakan data baru. 
+                            setFormActionAndSubmit(); // Fungsi untuk mengubah action dan mengirimkan form.
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Terjadi kesalahan:", error);
+                    });
+            }
+        });
 
         subKategori.addEventListener("change", function() {
             console.log(subKategori.value);
@@ -335,8 +332,30 @@
                     hiddenInput.value = dataString.toUpperCase();
                     dynamicContent.appendChild(hiddenInput);
 
-                    // Submit form
-                    dynamicContent.submit();
+                    fetch("<?= site_url('cek-data/') ?>" + <?= $id_simulasi ?> + "/" + selectJurusan.value + "/" + subKategori.value)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Proses validasi
+                            // Panggil fungsi untuk mengubah action dan mengirimkan form berdasarkan hasil validasi.
+                            var jumlah = data[0].jumlah;
+
+                            if (jumlah > 0) {
+                                var decision = confirm("Anda Telah mengisi data ini. Ingin menimpa dengan data yang baru?");
+
+                                if (decision) {
+                                    // User menyetujui untuk menimpa data
+                                    setFormActionAndSubmit(); // Fungsi untuk mengubah action dan mengirimkan form.
+                                } else {
+                                    // User tidak menyetujui, Lewati tahapan pengiriman form.
+                                }
+                            } else {
+                                // Melanjutkan pengiriman form jika data merupakan data baru. 
+                                setFormActionAndSubmit(); // Fungsi untuk mengubah action dan mengirimkan form.
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Terjadi kesalahan:", error);
+                        });
                 });
 
             } else if (subKategori.value == 0) {
@@ -404,6 +423,11 @@
 
             $('#nominal_anggaran').val(nominal_anggaran);
 
+        }
+
+        function setFormActionAndSubmit() {
+            dynamicContent.action = "<?= site_url('Pagu_jurusan/add_inputan') ?>"; // Ubah action form
+            dynamicContent.submit(); // Mengirimkan form.
         }
     </script>
 </body>

@@ -10,6 +10,10 @@
   $level = 'ADMIN NON JURUSAN';
 } ?>
 <title><?php echo NAMA_WEB . " | HALAMAN " . $level; ?></title>
+
+<!-- Icon untuk header -->
+<link rel="icon" href="https://blog-edutore-partner.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2022/06/06042128/POLIJE-LOGO.png" type="image/png">
+
 <!-- Tell the browser to be responsive to screen width -->
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 <!-- Bootstrap 3.3.7 -->

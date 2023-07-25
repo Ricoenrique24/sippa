@@ -231,7 +231,7 @@
         inputan.type = "hidden";
         btnCari.style.display = "none";
 
-        btnSubmit.addEventListener("click", function(event) {
+        dynamicContent.addEventListener("submit", function(event) {
             event.preventDefault();
 
             fetch("<?= site_url('cek-data/') ?>" + <?= $tabel_parent['id_simulasi'] ?> + "/" + selectJurusan.value + "/" + subKategori.value)
